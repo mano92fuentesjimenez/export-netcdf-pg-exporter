@@ -7,10 +7,10 @@ buffer-writer@2.0.0:
   resolved "https://registry.yarnpkg.com/buffer-writer/-/buffer-writer-2.0.0.tgz#ce7eb81a38f7829db09c873f2fbb792c0c98ec04"
   integrity sha512-a7ZpuTZU1TRtnwyCNW3I5dc0wWNC3VR9S++Ewyk2HHZdrO3CQJqSpd+95Us590V6AL7JqUAH2IwZ/398PmNFgw==
 
-export-netcdf@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/export-netcdf/-/export-netcdf-0.1.1.tgz#140431a22619f5c921188480725539c66a79c951"
-  integrity sha512-douqwkhO8vxCQ0vC212qxWBV5g7E9G08o8aJJnzUjWn+CYPEBs0/aWaAn6ZbcMJNCKHxBf/6n4+CJJG0G5JKoQ==
+export-netcdf@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/export-netcdf/-/export-netcdf-0.1.2.tgz#9ff77ba37554eb050b9734a0f1d30e531634b2f8"
+  integrity sha512-4MjVZuJ1lp0N7GeXDheZ+s2banwiHSKlCZ/3qKR9H9I6EGLNZDXFYbQP1N1qvXMaL0Eps/LWDjyXcuCjLoVXUQ==
   dependencies:
     lodash "^4.17.15"
     netcdf4 "^0.4.1"
