@@ -6,17 +6,25 @@ const pgExporter = require('../lib/exporter');
 const sandbox = sinon.sandbox.create();
 
 describe('PgExporter', () => {
-  beforeEach(() => {
+  let pgPool;
+  let pgQueryStub;
+  let pgEndStub;
 
+  beforeEach(() => {
+    pgPool = new Pool();
+    pgQueryStub = sandbox.stub(pgPool, 'query');
+    pgEndStub = sandbox.stub(pgPool, 'end');
   });
-  afterEach(() => {
+
+  afterEach(async () => {
     sandbox.restore();
+
+    if (!pgPool.ended) {
+      await pgPool.end();
+    }
   });
 
   it('exports a table with one geom column', async () => {
-    const pgPool = new Pool();
-    const pgQueryStub = sandbox.stub(pgPool, 'query');
-
     const exporter = pgExporter({
       variableUses: { LATITUDE: 'lat', LONGITUDE: 'lon' },
       createTable: true,
@@ -46,12 +54,10 @@ describe('PgExporter', () => {
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\')', []],
     );
+    expect(pgEndStub.callCount).to.equal(1);
   });
 
   it('exports a table with two columns one geom column and another float column', async () => {
-    const pgPool = new Pool();
-    const pgQueryStub = sandbox.stub(pgPool, 'query');
-
     const exporter = pgExporter({
       variableUses: { LATITUDE: 'lat', LONGITUDE: 'lon' },
       createTable: true,
@@ -85,5 +91,6 @@ describe('PgExporter', () => {
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\', $0)', [20]],
     );
+    expect(pgEndStub.callCount).to.equal(1);
   });
 });
