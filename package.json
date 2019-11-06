@@ -7,7 +7,7 @@
   "author": "miggy92 <m92fuentes@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "./local-sh/export-variables.sh && mocha --recursive --timeout 5000 ./tests",
+    "test": ". ./local-sh/export-variables.sh && mocha --recursive --timeout 5000 ./tests",
     "lint": "eslint ./**/*.js",
     "lint:fix": "eslint ./**/*.js --fix"
   },
