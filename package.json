@@ -6,8 +6,19 @@
   "repository": "https://github.com/mano92fuentesjimenez/export-netcdf-pg-exporter.git",
   "author": "miggy92 <m92fuentes@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "./local-sh/export-variables.sh && mocha --recursive --timeout 5000 ./tests",
+    "lint": "eslint ./**/*.js",
+    "lint:fix": "eslint ./**/*.js --fix"
+  },
   "dependencies": {
-    "export-netcdf": "^0.1.2",
     "pg": "^7.12.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
   }
 }
