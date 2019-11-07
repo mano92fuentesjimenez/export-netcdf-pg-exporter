@@ -47,9 +47,10 @@ describe('PgExporter', () => {
         fieldName: 'lon',
         fieldType: 'float',
       },
-    ], 1);
+    ], 2);
 
-    exporter.write([5, 5]);
+    await exporter.write([5, 5]);
+    await exporter.write([10, 50]);
 
     await exporter.finishWriting();
 
@@ -57,7 +58,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326) );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\')', []],
+      ['insert into "public"."test" values (\'srid=4326;point(5 5)\'), (\'srid=4326;point(10 50)\')', []],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -76,10 +77,11 @@ describe('PgExporter', () => {
         fieldName: 'time',
         fieldType: 'char',
       },
-    ], 1);
+    ], 2);
 
     const date = '1995-12-17T03:24:00';
-    exporter.write([date]);
+    await exporter.write([date]);
+    await exporter.write([date]);
 
     await exporter.finishWriting();
 
@@ -87,7 +89,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values ($1)', [new Date(date)]],
+      ['insert into "public"."test" values ($1), ($2)', [new Date(date), new Date(date)]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -118,10 +120,11 @@ describe('PgExporter', () => {
         fieldName: 'lon',
         fieldType: 'float',
       },
-    ], 1);
+    ], 2);
 
     const date = '1995-12-17T03:24:00';
-    exporter.write([date, 4, 3]);
+    await exporter.write([date, 4, 3]);
+    await exporter.write([date, 8, 10]);
 
     await exporter.finishWriting();
 
@@ -129,7 +132,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ( \'srid=4326;point(4 3)\', $1)', [new Date(date)]],
+      ['insert into "public"."test" values (\'srid=4326;point(4 3)\', $1), (\'srid=4326;point(8 10)\', $2)', [new Date(date), new Date(date)]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -154,10 +157,11 @@ describe('PgExporter', () => {
         fieldName: 'lon',
         fieldType: 'float',
       },
-    ], 1);
+    ], 2);
 
     const date = '1995-12-17T03:24:00';
-    exporter.write([date, 4]);
+    await exporter.write([date, 4]);
+    await exporter.write([date, 9]);
 
     await exporter.finishWriting();
 
@@ -165,7 +169,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestamp, lon numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values ($1, $2)', [new Date(date), 4]],
+      ['insert into "public"."test" values ($1, $2), ($3, $4)', [new Date(date), 4, new Date(date), 9]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -192,9 +196,10 @@ describe('PgExporter', () => {
         fieldName: 'number',
         fieldType: 'float',
       },
-    ], 1);
+    ], 2);
 
-    exporter.write([5, 5, 20]);
+    await exporter.write([5, 5, 20]);
+    await exporter.write([10, 15, 200]);
 
     await exporter.finishWriting();
 
@@ -202,7 +207,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\', $1)', [20]],
+      ['insert into "public"."test" values (\'srid=4326;point(5 5)\', $1), (\'srid=4326;point(10 15)\', $2)', [20, 200]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -220,9 +225,10 @@ describe('PgExporter', () => {
         fieldName: 'number',
         fieldType: 'float',
       },
-    ], 1);
+    ], 2);
 
-    exporter.write([5]);
+    await exporter.write([5]);
+    await exporter.write([22]);
 
     await exporter.finishWriting();
 
@@ -230,7 +236,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ($1)', [5]],
+      ['insert into "public"."test" values ($1), ($2)', [5, 22]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
