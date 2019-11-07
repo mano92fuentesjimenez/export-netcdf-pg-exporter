@@ -62,6 +62,114 @@ describe('PgExporter', () => {
     expect(pgEndStub.callCount).to.equal(1);
   });
 
+  it('exports a table with a Times column', async () => {
+    const exporter = new PgExporter({
+      variableUses: { TIME: 'time' },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'time',
+        fieldType: 'char',
+      },
+    ], 1);
+
+    const date = '1995-12-17T03:24:00';
+    exporter.write([date]);
+
+    await exporter.finishWriting();
+
+    expect(pgQueryStub.callCount).to.equal(2);
+
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestampz );']);
+    expect(pgQueryStub.secondCall.args).to.deep.equal(
+      ['insert into "public"."test" values ($1)', [new Date(date)]],
+    );
+    expect(pgEndStub.callCount).to.equal(1);
+  });
+
+  it('exports a table with a Times column and a geom coulumn', async () => {
+    const exporter = new PgExporter({
+      variableUses: {
+        TIME: 'time',
+        LATITUDE: 'lat',
+        LONGITUDE: 'lon',
+      },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'time',
+        fieldType: 'char',
+      },
+      {
+        fieldName: 'lat',
+        fieldType: 'float',
+      },
+      {
+        fieldName: 'lon',
+        fieldType: 'float',
+      },
+    ], 1);
+
+    const date = '1995-12-17T03:24:00';
+    exporter.write([date, 4, 3]);
+
+    await exporter.finishWriting();
+
+    expect(pgQueryStub.callCount).to.equal(2);
+
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestampz );']);
+    expect(pgQueryStub.secondCall.args).to.deep.equal(
+      ['insert into "public"."test" values  ( \'srid=4326;point(4 3)\', $1)', [new Date(date)]],
+    );
+    expect(pgEndStub.callCount).to.equal(1);
+  });
+
+  it('exports a table with a Times column and a number coulumn', async () => {
+    const exporter = new PgExporter({
+      variableUses: {
+        TIME: 'time',
+      },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'time',
+        fieldType: 'char',
+      },
+      {
+        fieldName: 'lon',
+        fieldType: 'float',
+      },
+    ], 1);
+
+    const date = '1995-12-17T03:24:00';
+    exporter.write([date, 4]);
+
+    await exporter.finishWriting();
+
+    expect(pgQueryStub.callCount).to.equal(2);
+
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestampz, lon numeric );']);
+    expect(pgQueryStub.secondCall.args).to.deep.equal(
+      ['insert into "public"."test" values ($1, $2)', [new Date(date), 4]],
+    );
+    expect(pgEndStub.callCount).to.equal(1);
+  });
+
   it('exports a table with two columns one geom column and another float column', async () => {
     const exporter = new PgExporter({
       variableUses: { LATITUDE: 'lat', LONGITUDE: 'lon' },
@@ -122,7 +230,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ($0)', [5]],
+      ['insert into "public"."test" values  ($1)', [5]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
