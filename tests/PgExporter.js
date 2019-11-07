@@ -1,6 +1,6 @@
-const { expect } = require('chai');
 const { Pool } = require('pg');
 const sinon = require('sinon');
+const { expect } = require('./setup');
 const PgExporter = require('../lib/exporter');
 const {
   InitializationError,
@@ -138,15 +138,14 @@ describe('PgExporter', () => {
       pgPool,
     });
 
-    await exporter.init([
+    const result = exporter.init([
       {
         fieldName: 'number',
         fieldType: 'float',
       },
-    ], 1)
-      .catch(
-        (error) => expect(error).to.be.instanceOf(BadGeomConfigurationError),
-      );
+    ], 1);
+
+    expect(result).to.eventually.throw(BadGeomConfigurationError);
   });
 
   it('fails because a geometry use was partially defined with longitude', async () => {
@@ -160,15 +159,14 @@ describe('PgExporter', () => {
       pgPool,
     });
 
-    await exporter.init([
+    const result = exporter.init([
       {
         fieldName: 'number',
         fieldType: 'float',
       },
-    ], 1)
-      .catch(
-        (error) => expect(error).to.be.instanceOf(BadGeomConfigurationError),
-      );
+    ], 1);
+
+    expect(result).to.eventually.throw(BadGeomConfigurationError);
   });
 
   it('fails because exporter was initialized twice', async () => {
@@ -186,15 +184,14 @@ describe('PgExporter', () => {
       },
     ], 1);
 
-    await exporter.init([
+    const result = exporter.init([
       {
         fieldName: 'number',
         fieldType: 'float',
       },
-    ], 1)
-      .catch(
-        (error) => expect(error).to.be.instanceOf(InitializationError),
-      );
+    ], 1);
+
+    expect(result).to.eventually.throw(InitializationError);
   });
 
   it('fails because exporter was not initialized', async () => {
@@ -205,9 +202,8 @@ describe('PgExporter', () => {
       pgPool,
     });
 
-    exporter.write([5, 5])
-      .catch(
-        (error) => expect(error).to.be.instanceOf(NoInitializatedError),
-      );
+    const result = exporter.write([5, 5]);
+
+    expect(result).to.eventually.throw(NoInitializatedError);
   });
 });
