@@ -2,6 +2,11 @@ const { expect } = require('chai');
 const { Pool } = require('pg');
 const sinon = require('sinon');
 const PgExporter = require('../lib/exporter');
+const {
+  InitializationError,
+  BadGeomConfigurationError,
+  NoInitializatedError,
+} = require('../lib/errors');
 
 const sandbox = sinon.sandbox.create();
 
@@ -120,5 +125,89 @@ describe('PgExporter', () => {
       ['insert into "public"."test" values  ($0)', [5]],
     );
     expect(pgEndStub.callCount).to.equal(1);
+  });
+
+  it('fails because a geometry use was partially defined with latitude', async () => {
+    const exporter = new PgExporter({
+      variableUses: {
+        LATITUDE: 'number',
+      },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'number',
+        fieldType: 'float',
+      },
+    ], 1)
+      .catch(
+        (error) => expect(error).to.be.instanceOf(BadGeomConfigurationError),
+      );
+  });
+
+  it('fails because a geometry use was partially defined with longitude', async () => {
+    const exporter = new PgExporter({
+      variableUses: {
+        LONGITUDE: 'number',
+      },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'number',
+        fieldType: 'float',
+      },
+    ], 1)
+      .catch(
+        (error) => expect(error).to.be.instanceOf(BadGeomConfigurationError),
+      );
+  });
+
+  it('fails because exporter was initialized twice', async () => {
+    const exporter = new PgExporter({
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'number',
+        fieldType: 'float',
+      },
+    ], 1);
+
+    await exporter.init([
+      {
+        fieldName: 'number',
+        fieldType: 'float',
+      },
+    ], 1)
+      .catch(
+        (error) => expect(error).to.be.instanceOf(InitializationError),
+      );
+  });
+
+  it('fails because exporter was not initialized', async () => {
+    const exporter = new PgExporter({
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    exporter.write([5, 5])
+      .catch(
+        (error) => expect(error).to.be.instanceOf(NoInitializatedError),
+      );
   });
 });
