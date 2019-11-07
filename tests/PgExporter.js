@@ -58,7 +58,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326) );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values (\'srid=4326;point(5 5)\'), (\'srid=4326;point(10 50)\')', []],
+      ['insert into "public"."test" values (\'srid=4326;point(5 5)\'), (\'srid=4326;point(50 10)\')', []],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -164,7 +164,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values (\'srid=4326;point(4 3)\', $1), (\'srid=4326;point(8 10)\', $2)', [new Date(date), new Date(date)]],
+      ['insert into "public"."test" values (\'srid=4326;point(3 4)\', $1), (\'srid=4326;point(10 8)\', $2)', [new Date(date), new Date(date)]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -207,7 +207,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values (\'srid=4326;point(4 3)\', $1), (\'srid=4326;point(8 10)\', $2)', [new Date(date), new Date(date)]],
+      ['insert into "public"."test" values (\'srid=4326;point(3 4)\', $1), (\'srid=4326;point(10 8)\', $2)', [new Date(date), new Date(date)]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
@@ -282,7 +282,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values (\'srid=4326;point(5 5)\', $1), (\'srid=4326;point(10 15)\', $2)', [20, 200]],
+      ['insert into "public"."test" values (\'srid=4326;point(5 5)\', $1), (\'srid=4326;point(15 10)\', $2)', [20, 200]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
