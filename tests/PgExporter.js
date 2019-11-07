@@ -85,7 +85,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.callCount).to.equal(2);
 
-    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestampz );']);
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values ($1)', [new Date(date)]],
     );
@@ -127,7 +127,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.callCount).to.equal(2);
 
-    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestampz );']);
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), time timestamp );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values  ( \'srid=4326;point(4 3)\', $1)', [new Date(date)]],
     );
@@ -163,7 +163,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.callCount).to.equal(2);
 
-    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestampz, lon numeric );']);
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestamp, lon numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values ($1, $2)', [new Date(date), 4]],
     );
