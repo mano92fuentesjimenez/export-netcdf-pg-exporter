@@ -2,7 +2,7 @@
   "name": "export-netcdf-pg-exporter",
   "version": "0.1.0",
   "description": "Postgres exporter for 'export-netcdf' library",
-  "main": "index.js",
+  "main": "lib/exporter.js",
   "repository": "https://github.com/mano92fuentesjimenez/export-netcdf-pg-exporter.git",
   "author": "miggy92 <m92fuentes@gmail.com>",
   "license": "MIT",
