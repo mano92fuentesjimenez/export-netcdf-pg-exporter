@@ -94,6 +94,38 @@ describe('PgExporter', () => {
     expect(pgEndStub.callCount).to.equal(1);
   });
 
+  it('exports a table with a Times column with a js Date invalid format', async () => {
+    const exporter = new PgExporter({
+      variableUses: { TIME: 'time' },
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'time',
+        fieldType: 'char',
+      },
+    ], 2);
+
+    const date = '1995-12-17_03:24:00';
+    const repairedDate = date.replace('_', 'T');
+    await exporter.write([date]);
+    await exporter.write([date]);
+
+    await exporter.finishWriting();
+
+    expect(pgQueryStub.callCount).to.equal(2);
+
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( time timestamp );']);
+    expect(pgQueryStub.secondCall.args).to.deep.equal(
+      ['insert into "public"."test" values ($1), ($2)', [new Date(repairedDate), new Date(repairedDate)]],
+    );
+    expect(pgEndStub.callCount).to.equal(1);
+  });
+
   it('exports a table with a Times column and a geom coulumn', async () => {
     const exporter = new PgExporter({
       variableUses: {
