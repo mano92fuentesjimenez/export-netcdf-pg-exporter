@@ -94,7 +94,7 @@ describe('PgExporter', () => {
 
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
-      ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\', $0)', [20]],
+      ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\', $1)', [20]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
