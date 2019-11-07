@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { Pool } = require('pg');
 const sinon = require('sinon');
-const pgExporter = require('../lib/exporter');
+const PgExporter = require('../lib/exporter');
 
 const sandbox = sinon.sandbox.create();
 
@@ -25,7 +25,7 @@ describe('PgExporter', () => {
   });
 
   it('exports a table with one geom column', async () => {
-    const exporter = pgExporter({
+    const exporter = new PgExporter({
       variableUses: { LATITUDE: 'lat', LONGITUDE: 'lon' },
       createTable: true,
       schema: 'public',
@@ -58,7 +58,7 @@ describe('PgExporter', () => {
   });
 
   it('exports a table with two columns one geom column and another float column', async () => {
-    const exporter = pgExporter({
+    const exporter = new PgExporter({
       variableUses: { LATITUDE: 'lat', LONGITUDE: 'lon' },
       createTable: true,
       schema: 'public',
@@ -90,6 +90,34 @@ describe('PgExporter', () => {
     expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( geom geometry(point, 4326), number numeric );']);
     expect(pgQueryStub.secondCall.args).to.deep.equal(
       ['insert into "public"."test" values  ( \'srid=4326;point(5 5)\', $0)', [20]],
+    );
+    expect(pgEndStub.callCount).to.equal(1);
+  });
+
+  it('exports a table with one number column', async () => {
+    const exporter = new PgExporter({
+      createTable: true,
+      schema: 'public',
+      table: 'test',
+      pgPool,
+    });
+
+    await exporter.init([
+      {
+        fieldName: 'number',
+        fieldType: 'float',
+      },
+    ], 1);
+
+    exporter.write([5]);
+
+    await exporter.finishWriting();
+
+    expect(pgQueryStub.callCount).to.equal(2);
+
+    expect(pgQueryStub.firstCall.args).to.deep.equal(['create table "public"."test"( number numeric );']);
+    expect(pgQueryStub.secondCall.args).to.deep.equal(
+      ['insert into "public"."test" values  ($0)', [5]],
     );
     expect(pgEndStub.callCount).to.equal(1);
   });
